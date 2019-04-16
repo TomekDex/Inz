@@ -43,7 +43,7 @@ namespace Games
         public abstract Player NextPlayer(State state);
         public abstract void UpdateSummary(State state);
 
-        internal List<Move> GetMoveAllowed(State state, Move[] moves, Player player)
+        public virtual List<Move> GetMoveAllowed(State state, Move[] moves, Player player)
         {
             List<Move> movesAllowed = new List<Move>();
             foreach (Move move in moves)
