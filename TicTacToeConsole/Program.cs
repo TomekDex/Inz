@@ -7,9 +7,9 @@ namespace TicTacToeConsole
     {
         static void Main(string[] args)
         {
-            TicTacToeGame game = new TicTacToeGame();
+            TicTacToe game = new TicTacToe();
             game.UserInterface = new TicTacToeConsoleUserInterface();
-            game.Start(new[] { new TicTacToePlayer(), new TicTacToePlayerAI() });
+            game.Start(new TicTacToeSettings(), new TicTacToePlayer(), new TicTacToePlayerAI());
         }
     }
 }

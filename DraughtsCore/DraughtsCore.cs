@@ -11,7 +11,7 @@ namespace DraughtsCore
         Black
     }
 
-    public class Draughts : Game<DraughtsState, DraughtsMove, DraughtsPlayer, DraughtsSummary, DraughtsJudge, DraughtsAction>
+    public class Draughts : Game<DraughtsState, DraughtsMove, DraughtsPlayer, DraughtsSummary, DraughtsJudge, DraughtsAction, DraughtsSettings>
     {
         public Draughts()
         {
@@ -25,7 +25,7 @@ namespace DraughtsCore
             StateStart = state;
             Actions = actions;
             StateEnd = (DraughtsState)state.Clone();
-            foreach (var action in actions)
+            foreach (DraughtsAction action in actions)
                 action.Execute(StateEnd);
         }
 
@@ -38,14 +38,14 @@ namespace DraughtsCore
     {
         public DraughtsPlayer[] Players { get; }
         public DraughtsPlayerType CurentPlayer { get; set; }
-        public DraughtsBorder Border { get; } = new DraughtsBorder();
+        public DraughtsBoard Board { get; } = new DraughtsBoard();
         public DraughtsSummary Summary { get { return new DraughtsSummary(this); } }
 
-        public DraughtsState(DraughtsPlayer[] players)
+        public DraughtsState(DraughtsSettings settings, DraughtsPlayer[] players)
         {
             Random random = new Random();
             CurentPlayer = DraughtsPlayerType.Black;
-            players[random.Next(2)].PlayerType = DraughtsPlayerType.Black;
+            players[settings.RandomStart ? random.Next(2) : 1].PlayerType = DraughtsPlayerType.Black;
             Players = players;
         }
 
@@ -53,7 +53,7 @@ namespace DraughtsCore
         {
             CurentPlayer = state.CurentPlayer;
             Players = state.Players;
-            Border = (DraughtsBorder)state.Border.Clone();
+            Board = (DraughtsBoard)state.Board.Clone();
         }
 
         public object Clone()
@@ -68,10 +68,10 @@ namespace DraughtsCore
         public DraughtsPlayerType? Winner { get; set; }
         public DraughtsSummary(DraughtsState draughtsState)
         {
-            foreach (var place in draughtsState.Border.PlacesAndNeighbors.Keys)
-                if (draughtsState.Border[place] != null)
-                    Results[draughtsState.Border[place].Value]++;
-            var max = Results.Values.Max();
+            foreach (System.Drawing.Point place in draughtsState.Board.PlacesAndNeighbors.Keys)
+                if (draughtsState.Board[place] != null)
+                    Results[draughtsState.Board[place].Value]++;
+            byte max = Results.Values.Max();
             if (!Results.All(a => a.Value == max))
                 Winner = Results.First(a => a.Value == max).Key;
         }

@@ -1,11 +1,10 @@
 ﻿using GamesCore;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace DraughtsCore
 {
-    public abstract class DraughtsPlayer : IPlayer<DraughtsState, DraughtsMove, DraughtsPlayer, DraughtsSummary, DraughtsAction>
+    public class DraughtsPlayer : IPlayer<DraughtsState, DraughtsMove, DraughtsPlayer, DraughtsSummary, DraughtsAction>
     {
         public DraughtsPlayerType PlayerType { get; internal set; }
         public bool NextInThisMove { get; internal set; }
@@ -21,7 +20,7 @@ namespace DraughtsCore
 
     public class DraughtsPlayerAI : DraughtsPlayer
     {
-        Random random = new Random();
+        readonly Random random = new Random();
         public override DraughtsMove NextMove(DraughtsState state, List<DraughtsMove> allowedMoves)
         {
             return allowedMoves[random.Next(allowedMoves.Count)];

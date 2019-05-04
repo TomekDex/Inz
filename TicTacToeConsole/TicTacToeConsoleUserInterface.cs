@@ -6,14 +6,6 @@ using TicTacToeCore;
 
 namespace TicTacToeConsole
 {
-    internal class TicTacToeGame : TicTacToe
-    {
-        public TicTacToeGame()
-        {
-            UserInterface = new TicTacToeConsoleUserInterface();
-        }
-    }
-
     internal class TicTacToeConsoleUserInterface : IUserInterface<TicTacToeState, TicTacToeMove, TicTacToePlayer, TicTacToeSummary, TicTacToeAction>
     {
         public void ShowEndState(TicTacToeState state)
@@ -49,10 +41,10 @@ namespace TicTacToeConsole
             Console.Clear();
             for (byte x = 0; x < 3; x++)
                 for (byte y = 0; y < 3; y++)
-                    if (state.Border[x, y] != default)
+                    if (state.Board[x, y] != default)
                     {
                         Console.SetCursorPosition(x, y);
-                        Console.Write(state.Border[x, y]);
+                        Console.Write(state.Board[x, y]);
                     }
         }
     }

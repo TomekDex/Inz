@@ -10,13 +10,13 @@ namespace TicTacToeCore
         O
     }
 
-    public class TicTacToe : Game<TicTacToeState, TicTacToeMove, TicTacToePlayer, TicTacToeSummary, TicTacToeJudge, TicTacToeAction>
+    public class TicTacToe : Game<TicTacToeState, TicTacToeMove, TicTacToePlayer, TicTacToeSummary, TicTacToeJudge, TicTacToeAction, TicTacToeSettings>
     {
     }
 
     public class TicTacToeMove : IMove<TicTacToeState, TicTacToeSummary, TicTacToeAction>
     {
-        public TicTacToeMove(TicTacToeAction action, TicTacToeState state) 
+        public TicTacToeMove(TicTacToeAction action, TicTacToeState state)
         {
             Actions = new List<TicTacToeAction> { action };
             StateStart = state;
@@ -33,7 +33,7 @@ namespace TicTacToeCore
     {
         public TicTacToePlayer[] Players { get; }
         public byte CurentPlayer { get; set; }
-        public TicTacToePlayerType?[,] Border { get; } = new TicTacToePlayerType?[3, 3];
+        public TicTacToePlayerType?[,] Board { get; } = new TicTacToePlayerType?[3, 3];
 
         private TicTacToeSummary summary;
         public TicTacToeSummary Summary
@@ -48,13 +48,13 @@ namespace TicTacToeCore
         {
             Players = state.Players;
             CurentPlayer = state.CurentPlayer;
-            Border = (TicTacToePlayerType?[,])state.Border.Clone();
+            Board = (TicTacToePlayerType?[,])state.Board.Clone();
         }
 
-        public TicTacToeState(TicTacToePlayer[] players)
+        public TicTacToeState(TicTacToeSettings settings, TicTacToePlayer[] players)
         {
             Random random = new Random();
-            CurentPlayer = (byte)random.Next(2);
+            CurentPlayer = settings.RandomStart ? (byte)random.Next(2) : (byte)1;
             players[CurentPlayer].PlayerType = TicTacToePlayerType.X;
             players[CurentPlayer == 0 ? 1 : 0].PlayerType = TicTacToePlayerType.O;
             Players = players;
@@ -72,29 +72,29 @@ namespace TicTacToeCore
         {
             for (int i = 0; i < 3; i++)
             {
-                if (state.Border[i, 0] != default && state.Border[i, 0] == state.Border[i, 1] && state.Border[i, 0] == state.Border[i, 2])
+                if (state.Board[i, 0] != default && state.Board[i, 0] == state.Board[i, 1] && state.Board[i, 0] == state.Board[i, 2])
                 {
                     IsEnd = true;
-                    Winner = state.Border[i, 0];
+                    Winner = state.Board[i, 0];
                     return;
                 }
-                if (state.Border[0, i] != default && state.Border[0, i] == state.Border[1, i] && state.Border[0, i] == state.Border[2, i])
+                if (state.Board[0, i] != default && state.Board[0, i] == state.Board[1, i] && state.Board[0, i] == state.Board[2, i])
                 {
                     IsEnd = true;
-                    Winner = state.Border[0, i];
+                    Winner = state.Board[0, i];
                     return;
                 }
             }
-            if (state.Border[0, 0] != default && state.Border[0, 0] == state.Border[1, 1] && state.Border[0, 0] == state.Border[2, 2])
+            if (state.Board[0, 0] != default && state.Board[0, 0] == state.Board[1, 1] && state.Board[0, 0] == state.Board[2, 2])
             {
                 IsEnd = true;
-                Winner = state.Border[0, 0];
+                Winner = state.Board[0, 0];
                 return;
             }
-            if (state.Border[0, 2] != default && state.Border[0, 2] == state.Border[1, 1] && state.Border[0, 2] == state.Border[2, 0])
+            if (state.Board[0, 2] != default && state.Board[0, 2] == state.Board[1, 1] && state.Board[0, 2] == state.Board[2, 0])
             {
                 IsEnd = true;
-                Winner = state.Border[0, 2];
+                Winner = state.Board[0, 2];
                 return;
             }
         }

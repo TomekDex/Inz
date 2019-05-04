@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using GamesCore;
+﻿using GamesCore;
 
 namespace TicTacToeCore
 {
@@ -10,7 +9,7 @@ namespace TicTacToeCore
             X = x;
             Y = y;
             PlayerType = playerType;
-            IsAllowed = state.Border[x, y] == default;
+            IsAllowed = state.Board[x, y] == default;
         }
 
         public byte X { get; }
@@ -20,8 +19,8 @@ namespace TicTacToeCore
         public bool IsEnd { get; } = true;
 
         public void Execute(TicTacToeState state)
-        {            
-            state.Border[X, Y] = PlayerType;
+        {
+            state.Board[X, Y] = PlayerType;
         }
     }
 }

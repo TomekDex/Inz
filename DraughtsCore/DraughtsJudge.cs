@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace DraughtsCore
 {
-    public class DraughtsJudge : IJudge<DraughtsState, DraughtsMove, DraughtsPlayer, DraughtsSummary, DraughtsAction>
+    public class DraughtsJudge : IJudge<DraughtsState, DraughtsMove, DraughtsPlayer, DraughtsSummary, DraughtsAction, DraughtsSettings>
     {
         public List<DraughtsMove> GetAllowedMoves(DraughtsState state, DraughtsPlayer player)
         {
@@ -16,7 +16,7 @@ namespace DraughtsCore
                     moves.Add(new DraughtsMove(state, hits));
 
             if (moves.Count == 0)
-                foreach (KeyValuePair<Point, Vector[]> placeAndNeighbors in state.Border.PlacesAndNeighbors)
+                foreach (KeyValuePair<Point, Vector[]> placeAndNeighbors in state.Board.PlacesAndNeighbors)
                     foreach (Vector neighbor in placeAndNeighbors.Value)
                     {
                         DraughtsActionMove actionMove = new DraughtsActionMove(player.PlayerType, placeAndNeighbors.Key, neighbor, state);
@@ -49,33 +49,33 @@ namespace DraughtsCore
 
         private static IEnumerable<DraughtsActionHit> GetHit(DraughtsPlayerType playerType, DraughtsActionHit hit, DraughtsState state)
         {
-            foreach (KeyValuePair<Point, Vector[]> placeAndNeighbors in state.Border.PlacesAndNeighbors)
+            foreach (KeyValuePair<Point, Vector[]> placeAndNeighbors in state.Board.PlacesAndNeighbors)
                 if (hit == null || hit.PointTarget == placeAndNeighbors.Key)
                     foreach (Vector neighbor in placeAndNeighbors.Value)
                     {
-                        DraughtsActionHit hitNew = new DraughtsActionHit(playerType, placeAndNeighbors.Key, neighbor, state, hit == null);
-                        if (hit.IsAllowed)
+                        DraughtsActionHit hitNew = new DraughtsActionHit(playerType, placeAndNeighbors.Key, neighbor, state);
+                        if (hitNew.IsAllowed)
                             yield return hitNew;
                     }
         }
 
         public bool IsNotEnd(DraughtsState state)
         {
-            return !state.Players.Any(a=>a.NoMove);
+            return !state.Players.Any(a => a.NoMove);
         }
 
         public DraughtsPlayer NextPlayer(DraughtsState state)
         {
-            state.CurentPlayer = state.CurentPlayer == DraughtsPlayerType.Black ? DraughtsPlayerType.White : DraughtsPlayerType.White;
+            state.CurentPlayer = state.CurentPlayer == DraughtsPlayerType.Black ? DraughtsPlayerType.White : DraughtsPlayerType.Black;
             return state.Players.First(a => a.PlayerType == state.CurentPlayer);
         }
 
-        public DraughtsState SetStartState(DraughtsPlayer[] players)
+        public DraughtsState SetStartState(DraughtsSettings settings, DraughtsPlayer[] players)
         {
             if (players.Length != 2)
                 throw new Exception("Bad number of players");
 
-            return new DraughtsState(players);
+            return new DraughtsState(settings, players);
         }
     }
 }

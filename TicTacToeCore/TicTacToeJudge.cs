@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace TicTacToeCore
 {
-    public class TicTacToeJudge : IJudge<TicTacToeState, TicTacToeMove, TicTacToePlayer, TicTacToeSummary, TicTacToeAction>
+    public class TicTacToeJudge : IJudge<TicTacToeState, TicTacToeMove, TicTacToePlayer, TicTacToeSummary, TicTacToeAction, TicTacToeSettings>
     {
         public List<TicTacToeMove> GetAllowedMoves(TicTacToeState state, TicTacToePlayer player)
         {
@@ -23,7 +23,7 @@ namespace TicTacToeCore
         {
             for (byte x = 0; x < 3; x++)
                 for (byte y = 0; y < 3; y++)
-                    if (state.Border[x, y] == default)
+                    if (state.Board[x, y] == default)
                         return !state.Summary.IsEnd;
             return false;
         }
@@ -34,12 +34,12 @@ namespace TicTacToeCore
             return state.Players[state.CurentPlayer];
         }
 
-        public TicTacToeState SetStartState(TicTacToePlayer[] players)
+        public TicTacToeState SetStartState(TicTacToeSettings settings, TicTacToePlayer[] players)
         {
             if (players.Length != 2)
                 throw new Exception("Bad number of players");
 
-            return new TicTacToeState(players as TicTacToePlayer[]);
+            return new TicTacToeState(settings, players);
         }
     }
 }

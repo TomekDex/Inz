@@ -5,16 +5,16 @@ using System.Linq;
 
 namespace DraughtsCore
 {
-    public class DraughtsBorder : ICloneable
+    public class DraughtsBoard : ICloneable
     {
-        private DraughtsPlayerType?[,] border = new DraughtsPlayerType?[5, 5];
+        private readonly DraughtsPlayerType?[,] border = new DraughtsPlayerType?[5, 5];
 
         public Dictionary<Point, Vector[]> PlacesAndNeighbors { get; }
 
-        public DraughtsBorder()
+        public DraughtsBoard()
         {
-            PlacesAndNeighbors = GetPlaces().ToDictionary(a=>a,GetNeighbors);
-            foreach (var place in PlacesAndNeighbors.Keys)
+            PlacesAndNeighbors = GetPlaces().ToDictionary(a => a, GetNeighbors);
+            foreach (Point place in PlacesAndNeighbors.Keys)
                 if (place.X != 2)
                     border[place.X, place.Y] = place.X < 2 ? DraughtsPlayerType.Black : DraughtsPlayerType.White;
         }
@@ -44,7 +44,7 @@ namespace DraughtsCore
                         yield return new Point(x, y);
         }
 
-        private DraughtsBorder(DraughtsBorder draughtsBorder)
+        private DraughtsBoard(DraughtsBoard draughtsBorder)
         {
             border = (DraughtsPlayerType?[,])draughtsBorder.border.Clone();
             PlacesAndNeighbors = draughtsBorder.PlacesAndNeighbors;
@@ -64,7 +64,7 @@ namespace DraughtsCore
 
         public object Clone()
         {
-            return new DraughtsBorder(this);
+            return new DraughtsBoard(this);
         }
     }
 
@@ -88,7 +88,7 @@ namespace DraughtsCore
 
         public override int GetHashCode()
         {
-            var hashCode = 27121115;
+            int hashCode = 27121115;
             hashCode = hashCode * -1521134295 + Y.GetHashCode();
             hashCode = hashCode * -1521134295 + X.GetHashCode();
             return hashCode;

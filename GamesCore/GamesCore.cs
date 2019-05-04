@@ -3,23 +3,24 @@ using System.Collections.Generic;
 
 namespace GamesCore
 {
-    public abstract class Game<TState, TMove, TPlayer, TSummary, TJudge, TAction>
+    public class Game<TState, TMove, TPlayer, TSummary, TJudge, TAction, TSettings>
         where TState : IState<TSummary>
         where TMove : IMove<TState, TSummary, TAction>
         where TPlayer : IPlayer<TState, TMove, TPlayer, TSummary, TAction>
         where TSummary : ISummary
-        where TJudge : IJudge<TState, TMove, TPlayer, TSummary, TAction>, new()
+        where TJudge : IJudge<TState, TMove, TPlayer, TSummary, TAction, TSettings>, new()
         where TAction : IAction
+        where TSettings : ISettings
     {
         private readonly TJudge judge = new TJudge();
         public IUserInterface<TState, TMove, TPlayer, TSummary, TAction> UserInterface { get; set; }
 
-        public void Start(TPlayer[] players)
+        public void Start(TSettings settings, params TPlayer[] players)
         {
             foreach (TPlayer player in players)
                 player.UserInterface = UserInterface;
 
-            TState state = judge.SetStartState(players);
+            TState state = judge.SetStartState(settings, players);
             while (judge.IsNotEnd(state))
             {
                 UserInterface?.ShowState(state);
@@ -35,6 +36,10 @@ namespace GamesCore
             }
             UserInterface?.ShowEndState(state);
         }
+    }
+
+    public interface ISettings
+    {
     }
 
     public interface IUserInterface<TState, TMove, TPlayer, TSummary, TAction>
@@ -75,14 +80,15 @@ namespace GamesCore
         bool IsEnd { get; }
     }
 
-    public interface IJudge<TState, TMove, TPlayer, TSummary, TAction>
+    public interface IJudge<TState, TMove, TPlayer, TSummary, TAction, TSettings>
         where TState : IState<TSummary>
         where TMove : IMove<TState, TSummary, TAction>
         where TPlayer : IPlayer<TState, TMove, TPlayer, TSummary, TAction>
         where TSummary : ISummary
         where TAction : IAction
+        where TSettings : ISettings
     {
-        TState SetStartState(TPlayer[] players);
+        TState SetStartState(TSettings settings, TPlayer[] players);
         bool IsNotEnd(TState state);
         TPlayer NextPlayer(TState state);
         List<TMove> GetAllowedMoves(TState state, TPlayer player);

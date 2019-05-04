@@ -33,13 +33,13 @@ namespace DraughtsCore
         {
             IsEnd = true;
             PointTarget = new Point(point.X + vector.X, point.Y + vector.Y);
-            Vector[] neighbors = state.Border.PlacesAndNeighbors[point];
+            Vector[] neighbors = state.Board.PlacesAndNeighbors[point];
 
             if (!neighbors.Contains(vector) ||
-                playerType != state.Border[point] ||
-                state.Border[PointTarget] != default ||
-                PlayerType == DraughtsPlayerType.Black && vector.X == 1 ||
-                PlayerType == DraughtsPlayerType.White && vector.X == -1)
+                playerType != state.Board[point] ||
+                state.Board[PointTarget] != default ||
+                PlayerType == DraughtsPlayerType.Black && vector.X == -1 ||
+                PlayerType == DraughtsPlayerType.White && vector.X == 1)
                 IsAllowed = false;
             else
                 IsAllowed = true;
@@ -47,8 +47,8 @@ namespace DraughtsCore
 
         public override void Execute(DraughtsState state)
         {
-            state.Border[Point] = default;
-            state.Border[PointTarget] = PlayerType;
+            state.Board[Point] = default;
+            state.Board[PointTarget] = PlayerType;
         }
     }
 
@@ -57,20 +57,18 @@ namespace DraughtsCore
         public Point PointTarget { get; internal set; }
         public Point PointTargetToHit { get; internal set; }
 
-        public DraughtsActionHit(DraughtsPlayerType playerType, Point point, Vector vector, DraughtsState state, bool isFirst) : base(playerType, point, vector)
+        public DraughtsActionHit(DraughtsPlayerType playerType, Point point, Vector vector, DraughtsState state) : base(playerType, point, vector)
         {
-            Vector[] neighbors = state.Border.PlacesAndNeighbors[point];
+            Vector[] neighbors = state.Board.PlacesAndNeighbors[point];
             PointTargetToHit = new Point(point.X + vector.X, point.Y + vector.Y);
             PointTarget = new Point(point.X + vector.X * 2, point.Y + vector.Y * 2);
             DraughtsPlayerType enemy = PlayerType == DraughtsPlayerType.Black ? DraughtsPlayerType.White : DraughtsPlayerType.Black;
 
             if (!neighbors.Contains(vector) ||
-                !state.Border.PlacesAndNeighbors[PointTargetToHit].Contains(vector) ||
-                playerType != state.Border[point] ||
-                state.Border[PointTargetToHit] != enemy ||
-                state.Border[PointTarget] != default ||
-                isFirst && (PlayerType == DraughtsPlayerType.Black && vector.X == 1 ||
-                PlayerType == DraughtsPlayerType.White && vector.X == -1))
+                !state.Board.PlacesAndNeighbors[PointTargetToHit].Contains(vector) ||
+                playerType != state.Board[point] ||
+                state.Board[PointTargetToHit] != enemy ||
+                state.Board[PointTarget] != default)
                 IsAllowed = false;
             else
                 IsAllowed = true;
@@ -78,9 +76,9 @@ namespace DraughtsCore
 
         public override void Execute(DraughtsState state)
         {
-            state.Border[Point] = default;
-            state.Border[PointTargetToHit] = default;
-            state.Border[PointTarget] = PlayerType;
+            state.Board[Point] = default;
+            state.Board[PointTargetToHit] = default;
+            state.Board[PointTarget] = PlayerType;
         }
     }
 }
