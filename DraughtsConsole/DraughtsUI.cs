@@ -3,13 +3,13 @@ using GamesCore;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace DraughtsConsole
 {
     class DraughtsUI : IUserInterface<DraughtsState, DraughtsMove, DraughtsPlayer, DraughtsSummary, DraughtsAction>
     {
-        public void ShowEndState(DraughtsState state)
+        public async Task ShowEndState(DraughtsState state)
         {
             ShowState(state);
             Console.SetCursorPosition(0, 7);
@@ -17,7 +17,7 @@ namespace DraughtsConsole
             Console.ReadKey();
         }
 
-        public DraughtsMove ShowSelectionMove(DraughtsState state, DraughtsPlayer player, List<DraughtsMove> allowedMoves)
+        public async Task<DraughtsMove> ShowSelectionMove(DraughtsState state, DraughtsPlayer player, List<DraughtsMove> allowedMoves)
         {
             Console.SetCursorPosition(0, 7);
             Console.WriteLine("Choose move plater: " + ChoosePlayerCharacter(player.PlayerType));
@@ -48,7 +48,7 @@ namespace DraughtsConsole
             return text.Trim();
         }
 
-        public void ShowState(DraughtsState state)
+        public async Task ShowState(DraughtsState state)
         {
             Console.Clear();
             foreach (Point place in state.Board.PlacesAndNeighbors.Keys)

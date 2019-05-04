@@ -1,5 +1,4 @@
-﻿using System;
-using TicTacToeCore;
+﻿using TicTacToeCore;
 
 namespace TicTacToeConsole
 {

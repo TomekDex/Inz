@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GamesCore
 {
@@ -15,7 +16,7 @@ namespace GamesCore
         private readonly TJudge judge = new TJudge();
         public IUserInterface<TState, TMove, TPlayer, TSummary, TAction> UserInterface { get; set; }
 
-        public void Start(TSettings settings, params TPlayer[] players)
+        public async Task Start(TSettings settings, params TPlayer[] players)
         {
             foreach (TPlayer player in players)
                 player.UserInterface = UserInterface;
@@ -23,18 +24,18 @@ namespace GamesCore
             TState state = judge.SetStartState(settings, players);
             while (judge.IsNotEnd(state))
             {
-                UserInterface?.ShowState(state);
+                await UserInterface?.ShowState(state);
                 TPlayer player = judge.NextPlayer(state);
                 List<TMove> allowedMoves = judge.GetAllowedMoves(state, player);
                 if (allowedMoves.Count == 0)
                     continue;
                 TMove nextMove;
                 do
-                    nextMove = player.NextMove(state, allowedMoves);
+                    nextMove = await player.NextMove(state, allowedMoves);
                 while (!allowedMoves.Contains(nextMove));
                 state = nextMove.StateEnd;
             }
-            UserInterface?.ShowEndState(state);
+            await UserInterface?.ShowEndState(state);
         }
     }
 
@@ -49,9 +50,9 @@ namespace GamesCore
         where TSummary : ISummary
         where TAction : IAction
     {
-        void ShowEndState(TState state);
-        void ShowState(TState state);
-        TMove ShowSelectionMove(TState state, TPlayer player, List<TMove> allowedMoves);
+        Task ShowEndState(TState state);
+        Task ShowState(TState state);
+        Task<TMove> ShowSelectionMove(TState state, TPlayer player, List<TMove> allowedMoves);
     }
 
     public interface IState<TSummary> : ICloneable
@@ -103,6 +104,6 @@ namespace GamesCore
     {
         IUserInterface<TState, TMove, TPlayer, TSummary, TAction> UserInterface { get; set; }
 
-        TMove NextMove(TState state, List<TMove> allowedMoves);
+        Task<TMove> NextMove(TState state, List<TMove> allowedMoves);
     }
 }

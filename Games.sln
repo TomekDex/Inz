@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DraughtsCore", "DraughtsCor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DraughtsConsole", "DraughtsConsole\DraughtsConsole.csproj", "{858ECE73-AFBB-478C-AC6D-6845052BE562}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicTacToeWindow", "TicTacToeWindow\TicTacToeWindow.csproj", "{568F71FD-AF51-42B9-A632-3319A359AD27}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{858ECE73-AFBB-478C-AC6D-6845052BE562}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{858ECE73-AFBB-478C-AC6D-6845052BE562}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{858ECE73-AFBB-478C-AC6D-6845052BE562}.Release|Any CPU.Build.0 = Release|Any CPU
+		{568F71FD-AF51-42B9-A632-3319A359AD27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{568F71FD-AF51-42B9-A632-3319A359AD27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{568F71FD-AF51-42B9-A632-3319A359AD27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{568F71FD-AF51-42B9-A632-3319A359AD27}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

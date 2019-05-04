@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TicTacToeCore;
 
 namespace TicTacToeConsole
 {
     internal class TicTacToeConsoleUserInterface : IUserInterface<TicTacToeState, TicTacToeMove, TicTacToePlayer, TicTacToeSummary, TicTacToeAction>
     {
-        public void ShowEndState(TicTacToeState state)
+        public async Task ShowEndState(TicTacToeState state)
         {
             ShowState(state);
             Console.SetCursorPosition(0, 7);
@@ -19,7 +20,7 @@ namespace TicTacToeConsole
                 Console.WriteLine($"{winner} Win !!!!!");
         }
 
-        public TicTacToeMove ShowSelectionMove(TicTacToeState state, TicTacToePlayer player, List<TicTacToeMove> allowedMoves)
+        public async Task<TicTacToeMove> ShowSelectionMove(TicTacToeState state, TicTacToePlayer player, List<TicTacToeMove> allowedMoves)
         {
             Console.SetCursorPosition(0, 7);
             Console.WriteLine($"Your turn {player.PlayerType}");
@@ -36,7 +37,7 @@ namespace TicTacToeConsole
             } while (true);
         }
 
-        public void ShowState(TicTacToeState state)
+        public async Task ShowState(TicTacToeState state)
         {
             Console.Clear();
             for (byte x = 0; x < 3; x++)
