@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicTacToeConsole", "TicTacT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DraughtsCore", "DraughtsCore\DraughtsCore.csproj", "{BC327538-2588-49CC-A92F-9AF6E87E2239}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DraughtsConsole", "DraughtsConsole\DraughtsConsole.csproj", "{858ECE73-AFBB-478C-AC6D-6845052BE562}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DraughtsConsole", "DraughtsConsole\DraughtsConsole.csproj", "{858ECE73-AFBB-478C-AC6D-6845052BE562}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicTacToeWindow", "TicTacToeWindow\TicTacToeWindow.csproj", "{568F71FD-AF51-42B9-A632-3319A359AD27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicTacToeWindow", "TicTacToeWindow\TicTacToeWindow.csproj", "{568F71FD-AF51-42B9-A632-3319A359AD27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningAIPlayer", "LearningAIPlayer\LearningAIPlayer.csproj", "{F361668A-7D5A-4078-B6E8-CFEEB442DD0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{568F71FD-AF51-42B9-A632-3319A359AD27}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{568F71FD-AF51-42B9-A632-3319A359AD27}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{568F71FD-AF51-42B9-A632-3319A359AD27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F361668A-7D5A-4078-B6E8-CFEEB442DD0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F361668A-7D5A-4078-B6E8-CFEEB442DD0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F361668A-7D5A-4078-B6E8-CFEEB442DD0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F361668A-7D5A-4078-B6E8-CFEEB442DD0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

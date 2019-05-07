@@ -4,11 +4,15 @@ namespace TicTacToeConsole
 {
     class Program
     {
-        static void Main(string[] args)
+        static  void Main(string[] args)
         {
             TicTacToe game = new TicTacToe();
             game.UserInterface = new TicTacToeConsoleUserInterface();
-            game.Start(new TicTacToeSettings(), new TicTacToePlayer(), new TicTacToePlayerAI());
+            while (true)
+            {
+                 game.Start(new TicTacToeSettings(), new TicTacToePlayerAI(), new TicTacToePlayerAI());
+            }
+            
         }
     }
 }

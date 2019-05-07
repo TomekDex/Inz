@@ -13,6 +13,10 @@ namespace DraughtsCore
         public IUserInterface<DraughtsState, DraughtsMove, DraughtsPlayer, DraughtsSummary, DraughtsAction> UserInterface { get; set; }
         public bool NoMove { get; internal set; }
 
+        public virtual void AnalyzeRsult(DraughtsState state)
+        {
+        }
+
         public virtual Task<DraughtsMove> NextMove(DraughtsState state, List<DraughtsMove> allowedMoves)
         {
             return UserInterface.ShowSelectionMove(state, this, allowedMoves);
