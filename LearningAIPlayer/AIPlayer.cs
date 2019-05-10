@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,130 +10,128 @@ namespace LearningAIPlayer
         NotEnd,
         Win,
         Defeat,
-        Draw,
-        OppMove
+        Draw
     }
 
-    public abstract class AIPlayer<TState>
+    public abstract class AIPlayer<TState, TPlayer>
     {
         public const string PATH_AI_FILE = @"AITree.json";
-        public static Node<TState> Tree { get; set; } = GetAITree();
+        public static Node<TState, TPlayer> Tree { get; set; } = GetAITree();
 
-        private static Node<TState> GetAITree()
+        private static Node<TState, TPlayer> GetAITree()
         {
             if (File.Exists(PATH_AI_FILE))
-                return JsonConvert.DeserializeObject<Node<TState>>(File.ReadAllText(PATH_AI_FILE));
-            return new Node<TState>();
+                return JsonConvert.DeserializeObject<Node<TState, TPlayer>>(File.ReadAllText(PATH_AI_FILE));
+            return null;
         }
 
-        public Node<TState> Root { get; set; }
-
-        public TState GetNextMove(TState start, TState[] stateMoves)
+        public void AddNode(TState root, params TState[] children)
         {
-            SetRootNode(start);
-            if (Root.Children == null)
-                Root.Children = stateMoves.Select(CreateNode).ToList();
-            Dictionary<Node<TState>, int> stats = Root.Children.Where(a => stateMoves.Contains(a.State)).ToDictionary(a => a, a => GetStats(a));
-            int theBest = stats.Values.Max();
-            Root = stats.First(a => a.Value == theBest).Key;
+            Node<TState, TPlayer>[] tree = Tree.GetNodes().ToArray();
+            foreach (TState child in children)
+            {
+                Node<TState, TPlayer> nodechild = tree.AsParallel().FirstOrDefault(a => a.State.Equals(child));
+                if (nodechild == null)
+                    nodechild = CreateNode(child);
+                foreach (Node<TState, TPlayer> node in tree.AsParallel().Where(a => a.State.Equals(root)))
+                    if (!node.Children.Contains(nodechild))
+                        node.Children.Add(nodechild);
+            }
+        }
+
+        public Node<TState, TPlayer> Root { get; set; }
+
+        public TState GetNextMove(TState start, TState[] stateMoves, TPlayer player)
+        {
+            SetRoot(start, stateMoves);
+            Node<TState, TPlayer> next = Root.GetNext();
+            Root = next;
             return stateMoves.Single(a => a.Equals(Root.State));
         }
 
-        private int GetStats(Node<TState> node)
+        private void SetRoot(TState start, TState[] stateMoves)
         {
-            //if (node.Score !=Score.NotEnd)
-            switch (node.Score)
+            Node<TState, TPlayer>[] nodes = Tree?.GetNodes()?.Where(a => a.State.Equals(start))?.ToArray();
+            if ((nodes?.Length ?? 0) == 0)
             {
-                case Score.NotEnd:
-                    //Node<TState>[] nodes = GetMyNode(node).ToArray();
-                    //int drowCont = nodes.Count(a => a.Score == Score.Draw);
-                    //int endCont = nodes.Count(a => a.Score != Score.NotEnd && a.Score != Score.Defeat);
-                    return node.Children?.Sum(a => GetStats(a)) ?? 0;
-                case Score.Win:
-                    return 1;
-                case Score.Defeat:
-                    return -1;
-                case Score.Draw:
-                    return 0;
-                case Score.OppMove:
-                    return node.Children?.Sum(a => GetStats(a)) ?? 0;
-                    default:
-                    return 0;
-            }
-            //Node<TState>[] nodes = GetMyNode(node).ToArray();
-            ////node.Score = SumScore(node);
-            //int defeatCont = nodes.Count(a => a.Score == Score.Defeat);
-            //if (node.Score == Score.Defeat)
-            //    defeatCont++;
-            //if (node.Score == Score.Win)
-            //    defeatCont--;
-            //int drowCont = nodes.Count(a => a.Score == Score.Draw);
-            //int endCont = nodes.Count(a => a.Score != Score.NotEnd && a.Score != Score.Defeat);
-            //var aasdasd = string.Join("\r\n", nodes.Select(a => a.State.ToString()));
-            //return endCont - defeatCont;
-        }
-
-        private Score SumScore(Node<TState> root)
-        {
-            if (root.Children != null)
-            {
-                foreach (Node<TState> child in root.Children)
-                    child.Score = SumScore(child);
-                if (root.Score != Score.OppMove && GetMyNode(root).All(a => a.Score == Score.Defeat))
-                    return Score.Defeat;
-            }
-            return root.Score;
-        }
-
-        private IEnumerable<Node<TState>> GetMyNode(Node<TState> root)
-        {
-            if (root.Children != null)
-                foreach (Node<TState> child in root.Children)
-                {
-                    if (child.Score != Score.OppMove)
-                        yield return child;
-                    if (child.Score != Score.Defeat)
-                        foreach (Node<TState> node in GetMyNode(child))
-                            yield return node;
-                }
-        }
-
-        public abstract Node<TState> CreateNode(TState state);
-
-        void SetRootNode(TState state)
-        {
-            if (Root == null)
-            {
-                if (Tree.Children == null)
-                    Tree.Children = new List<Node<TState>>();
-                Root = Tree.Children.FirstOrDefault(a => a.State.Equals(state));
-                if (Root == null)
-                {
-                    Root = new Node<TState> { State = state };
-                    Tree.Children.Add(Root);
-                }
-            }
-            else
-            {
-                if (Root.Children == null)
-                    Root.Children = new List<Node<TState>>();
-                Node<TState> node = Root.Children.FirstOrDefault(a => a.State.Equals(state));
-                if (node == null)
-                {
-                    node = CreateNode(state);
-                    node.Score = Score.OppMove;
-                    Root.Children.Add(node);
-                }
-
+                Node<TState, TPlayer> node = CreateNode(start);
+                if (Tree == null)
+                    Root = Tree = node;
+                else
+                    AddNode(Root.State, start);
                 Root = node;
             }
+            else
+                Root = nodes.First();
+
+            AddNode(start, stateMoves);
         }
+
+        public abstract Node<TState, TPlayer> CreateNode(TState state);
     }
 
-    public class Node<TState>
+    public class Node<TState, TPlayer>
     {
         public TState State { get; set; }
-        public Score Score { get; set; }
-        public List<Node<TState>> Children { get; set; }
+        public bool End { get; set; }
+        public bool Winner { get; set; }
+        public TPlayer Player { get; set; }
+        public Score Summary
+        {
+            get
+            {
+                if (End)
+                {
+                    if (Winner)
+                        return Score.Win;
+                    else
+                        return Score.Draw;
+                }
+
+                if (Children.Any(a => a.Summary == Score.Win))
+                    return Score.Defeat;
+                if (Children.Any(a => a.Summary == Score.NotEnd))
+                    return Score.NotEnd;
+                if (Children.Any(a => a.Summary == Score.Draw))
+                    return Score.Draw;
+                if (Children.Any(a => a.Summary == Score.Defeat))
+                    return Score.Win;
+                return Score.NotEnd;
+            }
+        }
+
+        public List<Node<TState, TPlayer>> Children { get; set; } = new List<Node<TState, TPlayer>>();
+
+        public Node<TState, TPlayer> GetNext()
+        {
+            Node<TState, TPlayer> next = Children.FirstOrDefault(a => a.Summary == Score.Win);
+            if (next == null)
+                next = Children.FirstOrDefault(a => a.Summary == Score.NotEnd);
+            if (next == null)
+                next = Children.FirstOrDefault(a => a.Summary == Score.Draw);
+            if (next == null)
+                next = Children.First();
+            return next;
+        }
+
+        public IEnumerable<Node<TState, TPlayer>> GetNodes()
+        {
+            yield return this;
+            if (Children?.Count > 0)
+                foreach (Node<TState, TPlayer> child in Children)
+                    foreach (Node<TState, TPlayer> node in child.GetNodes())
+                        yield return node;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Node<TState, TPlayer> node &&
+                   EqualityComparer<TState>.Default.Equals(State, node.State);
+        }
+
+        public override int GetHashCode()
+        {
+            return EqualityComparer<TState>.Default.GetHashCode(State);
+        }
     }
 }

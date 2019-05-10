@@ -21,11 +21,7 @@ namespace TicTacToeCore
 
         public bool IsNotEnd(TicTacToeState state)
         {
-            for (byte x = 0; x < 3; x++)
-                for (byte y = 0; y < 3; y++)
-                    if (state.Board[x, y] == default)
-                        return !state.Summary.IsEnd;
-            return false;
+            return !state.Summary.IsEnd;
         }
 
         public TicTacToePlayer NextPlayer(TicTacToeState state)

@@ -1,5 +1,6 @@
 ﻿using GamesCore;
 using LearningAIPlayer;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,8 @@ namespace TicTacToeCore
 {
     public class TicTacToePlayer : IPlayer<TicTacToeState, TicTacToeMove, TicTacToePlayer, TicTacToeSummary, TicTacToeAction>
     {
-        public TicTacToePlayerType PlayerType { get; internal set; }
+        public TicTacToePlayerType PlayerType { get; set; }
+        [JsonIgnore]
         public IUserInterface<TicTacToeState, TicTacToeMove, TicTacToePlayer, TicTacToeSummary, TicTacToeAction> UserInterface { get; set; }
 
         public virtual void AnalyzeRsult(TicTacToeState state)
@@ -20,60 +22,64 @@ namespace TicTacToeCore
         {
             return UserInterface.ShowSelectionMove(state, this, allowedMoves);
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj is TicTacToePlayer player &&
+                   PlayerType == player.PlayerType;
+        }
+
+        public override int GetHashCode()
+        {
+            return PlayerType.GetHashCode();
+        }
     }
 
     public class TicTacToePlayerAI : TicTacToePlayer
     {
-        readonly Random random = new Random();
         readonly TicTacToeLearningAIPlayer aIPlayer;
 
         public TicTacToePlayerAI()
         {
-            aIPlayer = new TicTacToeLearningAIPlayer(this);
+            aIPlayer = new TicTacToeLearningAIPlayer();
         }
 
         public override async Task<TicTacToeMove> NextMove(TicTacToeState state, List<TicTacToeMove> allowedMoves)
         {
-            TicTacToeState move = aIPlayer.GetNextMove(state, allowedMoves.Select(a => a.StateEnd).ToArray());
+            TicTacToeState move = aIPlayer.GetNextMove(state, allowedMoves.Select(a => a.StateEnd).ToArray(), this);
             return allowedMoves.First(a => a.StateEnd == move);
         }
 
         public override void AnalyzeRsult(TicTacToeState state)
         {
-            if (!aIPlayer.Root.State.Equals(state))
-            {
-                aIPlayer.Root.Score = aIPlayer.GetScore(state);
-            }
+            if (!TicTacToeLearningAIPlayer.Tree.GetNodes().Any(a => a.State.Equals(state)) && !aIPlayer.Root.State.Equals(state))
+                aIPlayer.AddNode(aIPlayer.Root.State, state);
         }
     }
 
-    public class TicTacToeLearningAIPlayer : AIPlayer<TicTacToeState>
+    public class TicTacToeLearningAIPlayer : AIPlayer<TicTacToeState, TicTacToePlayer>
     {
-        private readonly TicTacToePlayerAI ticTacToePlayerAI;
-
-        public TicTacToeLearningAIPlayer(TicTacToePlayerAI ticTacToePlayerAI)
+        public override Node<TicTacToeState, TicTacToePlayer> CreateNode(TicTacToeState state)
         {
-            this.ticTacToePlayerAI = ticTacToePlayerAI;
-        }
-
-        public override Node<TicTacToeState> CreateNode(TicTacToeState state)
-        {
-            return new Node<TicTacToeState>
+            return new Node<TicTacToeState, TicTacToePlayer>
             {
                 State = state,
-                Score = GetScore(state)
+                End = state.Summary.IsEnd,
+                Winner = state.Summary.Winner != null,
+                Player = GetPlayer(state)
             };
         }
 
-        public Score GetScore(TicTacToeState state)
+        private TicTacToePlayer GetPlayer(TicTacToeState state)
         {
-            if (state.Summary.IsEnd)
-            {
-                if (!state.Summary.Winner.HasValue)
-                    return Score.Draw;
-                return state.Summary.Winner == ticTacToePlayerAI.PlayerType ? Score.Win : Score.Defeat;
-            }
-            return Score.NotEnd;
+            Dictionary<TicTacToePlayerType, byte> counts = new Dictionary<TicTacToePlayerType, byte> { { TicTacToePlayerType.X, 0 }, { TicTacToePlayerType.O, 0 } };
+            foreach (TicTacToePlayerType? type in state.Board)
+                if (type.HasValue)
+                    counts[type.Value]++;
+            if (counts[TicTacToePlayerType.O] == counts[TicTacToePlayerType.X])
+                return state.Players.Single(a => a.PlayerType == TicTacToePlayerType.X);
+            else
+                return state.Players.Single(a => a.PlayerType == TicTacToePlayerType.O);
         }
     }
 }

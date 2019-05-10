@@ -106,6 +106,12 @@ namespace TicTacToeCore
                 Winner = state.Board[0, 2];
                 return;
             }
+
+            for (byte x = 0; x < 3; x++)
+                for (byte y = 0; y < 3; y++)
+                    if (state.Board[x, y] == default)
+                        return;
+            IsEnd = true;
         }
 
         public bool IsEnd { get; set; }
