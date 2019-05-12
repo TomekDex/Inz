@@ -17,29 +17,18 @@ namespace LearningAIPlayer
     public abstract class AIPlayer<TState, TPlayer>
     {
         public const string PATH_AI_FILE = @"AITree.json";
-        public static Node<TState, TPlayer> Tree { get; set; }
-        public static Dictionary<TState, Node<TState, TPlayer>> DictionaryTree { get; set; }
+        public static Dictionary<TState, Node<TState, TPlayer>> Tree { get; set; } = GetAITree();
         public static Task saveTask;
         public static object saveSemafore = new object();
         public static object addNodeSemafore = new object();
 
-        public Node<TState, TPlayer> Root { get; set; }
+        public TState Root { get; set; }
 
-        static AIPlayer()
-        {
-            Tree = GetAITree();
-            DictionaryTree = new Dictionary<TState, Node<TState, TPlayer>>();
-            if (Tree != null)
-                foreach (Node<TState, TPlayer> node in Tree.GetNodes())
-                    if (!DictionaryTree.ContainsKey(node.State))
-                        DictionaryTree.Add(node.State, node);
-        }
-
-        private static Node<TState, TPlayer> GetAITree()
+        private static Dictionary<TState, Node<TState, TPlayer>> GetAITree()
         {
             if (File.Exists(PATH_AI_FILE))
-                return JsonConvert.DeserializeObject<Node<TState, TPlayer>>(File.ReadAllText(PATH_AI_FILE));
-            return null;
+                return JsonConvert.DeserializeObject<KeyValuePair<TState, Node<TState, TPlayer>>[]>(File.ReadAllText(PATH_AI_FILE)).ToDictionary(a => a.Key, a => a.Value);
+            return new Dictionary<TState, Node<TState, TPlayer>>();
         }
 
         private static void SaveTree()
@@ -47,7 +36,7 @@ namespace LearningAIPlayer
             Task newSaveTask = new Task(async () =>
                 {
                     lock (addNodeSemafore)
-                        File.WriteAllText(PATH_AI_FILE, JsonConvert.SerializeObject(Tree));
+                        File.WriteAllText(PATH_AI_FILE, JsonConvert.SerializeObject(Tree.ToArray()));
                     await Task.Delay(10000);
                     if (saveTask != null)
                     {
@@ -69,51 +58,44 @@ namespace LearningAIPlayer
         public void AddNode(TState root, params TState[] children)
         {
             bool anyNew = false;
-            Node<TState, TPlayer>[] tree = Tree.GetNodes().ToArray();
             foreach (TState child in children)
             {
-                Node<TState, TPlayer> nodechild;
-                if (!DictionaryTree.ContainsKey(child))
-                    nodechild = CreateNode(child);
-                else
-                    nodechild = DictionaryTree[child];
-
-                foreach (Node<TState, TPlayer> node in tree.Where(a => a.State.Equals(root)))
-                    if (!node.Children.Contains(nodechild))
-                    {
+                if (!Tree[root].Children.Contains(child))
+                {
+                    lock (addNodeSemafore)
+                        Tree[root].Children.Add(child);
+                    Tree[root].Summary = Score.NotEnd;
+                    if (!Tree.ContainsKey(child))
                         lock (addNodeSemafore)
-                            node.Children.Add(nodechild);
-                        node.Summary = Score.NotEnd;
-                        if (!DictionaryTree.ContainsKey(nodechild.State))
-                            DictionaryTree.Add(nodechild.State, nodechild);
-                        anyNew = true;
-                    }
+                            Tree.Add(child, CreateNode(child));
+                    anyNew = true;
+                }
             }
 
             if (anyNew)
                 SaveTree();
         }
 
-        public TState GetNextMove(TState start, TState[] stateMoves, TPlayer player)
+        public TState GetNextMove(TState start, TState[] stateMoves)
         {
             SetRoot(start, stateMoves);
-            Root = Root.GetNext();
-            return stateMoves.Single(a => a.Equals(Root.State));
+            Root = Tree[Root].GetNext();
+            return stateMoves.Single(a => a.Equals(Root));
         }
 
         private void SetRoot(TState start, TState[] stateMoves)
         {
-            if (!DictionaryTree.ContainsKey(start))
+            if (!Tree.ContainsKey(start))
             {
-                Node<TState, TPlayer> node = CreateNode(start);
-                if (Tree == null)
-                    Root = Tree = node;
-                else
-                    AddNode(Root.State, start);
+                lock (addNodeSemafore)
+                    Tree.Add(start, CreateNode(start));
+                if (Root != null)
+                    lock (addNodeSemafore)
+                        Tree[Root].Children.Add(start);
             }
 
             AddNode(start, stateMoves);
-            Root = DictionaryTree[start];
+            Root = start;
         }
 
         public abstract Node<TState, TPlayer> CreateNode(TState state);
@@ -121,7 +103,6 @@ namespace LearningAIPlayer
 
     public class Node<TState, TPlayer>
     {
-        public TState State { get; set; }
         public bool End { get; set; }
         public bool Winner { get; set; }
         public TPlayer Player { get; set; }
@@ -141,13 +122,13 @@ namespace LearningAIPlayer
                         return summary = Score.Draw;
                 }
 
-                if (Children.Any(a => a.Summary == Score.Win))
+                if (Children.Any(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.Win))
                     return summary = Score.Defeat;
-                if (Children.Any(a => a.Summary == Score.NotEnd))
+                if (Children.Any(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.NotEnd))
                     return Score.NotEnd;
-                if (Children.Any(a => a.Summary == Score.Draw))
+                if (Children.Any(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.Draw))
                     return summary = Score.Draw;
-                if (Children.Any(a => a.Summary == Score.Defeat))
+                if (Children.Any(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.Defeat))
                     return summary = Score.Win;
                 return Score.NotEnd;
             }
@@ -158,38 +139,18 @@ namespace LearningAIPlayer
         }
         private Score summary = Score.NotEnd;
 
-        public List<Node<TState, TPlayer>> Children { get; set; } = new List<Node<TState, TPlayer>>();
+        public List<TState> Children { get; set; } = new List<TState>();
 
-        public Node<TState, TPlayer> GetNext()
+        public TState GetNext()
         {
-            Node<TState, TPlayer> next = Children.FirstOrDefault(a => a.Summary == Score.Win);
+            TState next = Children.FirstOrDefault(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.Win);
             if (next == null)
-                next = Children.FirstOrDefault(a => a.Summary == Score.NotEnd);
+                next = Children.FirstOrDefault(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.NotEnd);
             if (next == null)
-                next = Children.FirstOrDefault(a => a.Summary == Score.Draw);
+                next = Children.FirstOrDefault(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.Draw);
             if (next == null)
                 next = Children.First();
             return next;
-        }
-
-        public IEnumerable<Node<TState, TPlayer>> GetNodes()
-        {
-            yield return this;
-            if (Children?.Count > 0)
-                foreach (Node<TState, TPlayer> child in Children)
-                    foreach (Node<TState, TPlayer> node in child.GetNodes())
-                        yield return node;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is Node<TState, TPlayer> node &&
-                   EqualityComparer<TState>.Default.Equals(State, node.State);
-        }
-
-        public override int GetHashCode()
-        {
-            return EqualityComparer<TState>.Default.GetHashCode(State);
         }
     }
 }

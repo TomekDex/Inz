@@ -1,7 +1,6 @@
 ﻿using GamesCore;
 using LearningAIPlayer;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -46,14 +45,14 @@ namespace TicTacToeCore
 
         public override async Task<TicTacToeMove> NextMove(TicTacToeState state, List<TicTacToeMove> allowedMoves)
         {
-            TicTacToeState move = aIPlayer.GetNextMove(state, allowedMoves.Select(a => a.StateEnd).ToArray(), this);
+            TicTacToeState move = aIPlayer.GetNextMove(state, allowedMoves.Select(a => a.StateEnd).ToArray());
             return allowedMoves.First(a => a.StateEnd == move);
         }
 
         public override void AnalyzeRsult(TicTacToeState state)
         {
-            if (!TicTacToeLearningAIPlayer.Tree.GetNodes().Any(a => a.State.Equals(state)) && !aIPlayer.Root.State.Equals(state))
-                aIPlayer.AddNode(aIPlayer.Root.State, state);
+            if (!TicTacToeLearningAIPlayer.Tree.ContainsKey(state) && !aIPlayer.Root.Equals(state))
+                aIPlayer.AddNode(aIPlayer.Root, state);
         }
     }
 
@@ -63,7 +62,6 @@ namespace TicTacToeCore
         {
             return new Node<TicTacToeState, TicTacToePlayer>
             {
-                State = state,
                 End = state.Summary.IsEnd,
                 Winner = state.Summary.Winner != TicTacToePlayerType.No,
                 Player = GetPlayer(state)
@@ -76,7 +74,7 @@ namespace TicTacToeCore
             for (int i = 0; i < 3; i++)
                 for (int j = 0; j < 3; j++)
                 {
-                    var type = state.Board[i, j];
+                    TicTacToePlayerType type = state.Board[i, j];
                     if (type != TicTacToePlayerType.No)
                         counts[type]++;
                 }

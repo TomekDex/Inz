@@ -71,8 +71,6 @@ namespace TicTacToeCore
 
         public TicTacToePlayerType? GetScore()
         {
-            if ((fullMask & Board) == fullMask)
-                return TicTacToePlayerType.No;
             for (int i = 0; i < endMasksX.Length; i++)
             {
                 int result = endMasksO[i] & Board;
@@ -81,6 +79,8 @@ namespace TicTacToeCore
                 if (result == endMasksO[i])
                     return TicTacToePlayerType.O;
             }
+            if ((fullMask & Board) == fullMask)
+                return TicTacToePlayerType.No;
             return null;
         }
     }

@@ -48,18 +48,6 @@ namespace TicTacToeCore
             return new TicTacToeState(this);
         }
 
-        public override string ToString()
-        {
-            string s = "Win: " + Summary.Winner + "\r\n";
-            for (int j = 0; j < 3; j++)
-            {
-                s += "\r\n";
-                for (int i = 0; i < 3; i++)
-                    s += Board[i, j] == TicTacToePlayerType.No ? "" : Board[i, j].ToString();
-            }
-            return s;
-        }
-
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
