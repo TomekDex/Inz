@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
           xmlns:local="clr-namespace:TicTacToeWindow"
         mc:Ignorable="d"
-        Title="TicTacToeUIWindow" Height="450" Width="800">
+        Title="TicTacToe" Height="450" Width="800">
     <Grid x:Name="MainGrid" HorizontalAlignment="Stretch" Margin="5,5,5,5" VerticalAlignment="Stretch" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>

@@ -65,7 +65,7 @@ namespace TicTacToeCore
             {
                 State = state,
                 End = state.Summary.IsEnd,
-                Winner = state.Summary.Winner != null,
+                Winner = state.Summary.Winner != TicTacToePlayerType.No,
                 Player = GetPlayer(state)
             };
         }
@@ -73,9 +73,13 @@ namespace TicTacToeCore
         private TicTacToePlayer GetPlayer(TicTacToeState state)
         {
             Dictionary<TicTacToePlayerType, byte> counts = new Dictionary<TicTacToePlayerType, byte> { { TicTacToePlayerType.X, 0 }, { TicTacToePlayerType.O, 0 } };
-            foreach (TicTacToePlayerType? type in state.Board)
-                if (type.HasValue)
-                    counts[type.Value]++;
+            for (int i = 0; i < 3; i++)
+                for (int j = 0; j < 3; j++)
+                {
+                    var type = state.Board[i, j];
+                    if (type != TicTacToePlayerType.No)
+                        counts[type]++;
+                }
             if (counts[TicTacToePlayerType.O] == counts[TicTacToePlayerType.X])
                 return state.Players.Single(a => a.PlayerType == TicTacToePlayerType.X);
             else

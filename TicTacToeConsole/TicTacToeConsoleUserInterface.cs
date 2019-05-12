@@ -13,8 +13,8 @@ namespace TicTacToeConsole
         {
             ShowState(state);
             Console.SetCursorPosition(0, 7);
-            TicTacToePlayerType? winner = state.Summary.Winner;
-            if (winner == default)
+            TicTacToePlayerType winner = state.Summary.Winner;
+            if (winner == TicTacToePlayerType.No)
                 Console.WriteLine("Draw!!!!!");
             else
                 Console.WriteLine($"{winner} Win !!!!!");

@@ -1,15 +1,19 @@
 ﻿using GamesCore;
+using Newtonsoft.Json;
 using System;
 
 namespace TicTacToeCore
 {
     public class TicTacToeState : IState<TicTacToeSummary>
     {
+        [JsonIgnore]
         public TicTacToePlayer[] Players { get; }
+        [JsonIgnore]
         public byte CurentPlayer { get; set; }
-        public TicTacToePlayerType?[,] Board { get; } = new TicTacToePlayerType?[3, 3];
+        public TicTacToeBoard Board { get; set; } = new TicTacToeBoard();
 
         private TicTacToeSummary summary;
+        [JsonIgnore]
         public TicTacToeSummary Summary
         {
             get
@@ -18,11 +22,16 @@ namespace TicTacToeCore
             }
         }
 
+        public TicTacToeState()
+        {
+
+        }
+
         public TicTacToeState(TicTacToeState state)
         {
             Players = state.Players;
             CurentPlayer = state.CurentPlayer;
-            Board = (TicTacToePlayerType?[,])state.Board.Clone();
+            Board = new TicTacToeBoard { Board = state.Board.Board };
         }
 
         public TicTacToeState(TicTacToeSettings settings, TicTacToePlayer[] players)
@@ -41,12 +50,12 @@ namespace TicTacToeCore
 
         public override string ToString()
         {
-            string s = "Win: "+ Summary.Winner + "\r\n";
+            string s = "Win: " + Summary.Winner + "\r\n";
             for (int j = 0; j < 3; j++)
             {
                 s += "\r\n";
                 for (int i = 0; i < 3; i++)
-                    s += Board[i, j]?.ToString() ?? " ";
+                    s += Board[i, j] == TicTacToePlayerType.No ? "" : Board[i, j].ToString();
             }
             return s;
         }
@@ -55,23 +64,13 @@ namespace TicTacToeCore
         {
             if (obj == null || GetType() != obj.GetType())
                 return false;
-            var objState = (TicTacToeState)obj;
 
-            for (int i = 0; i < 3; i++)
-                for (int j = 0; j < 3; j++)
-                    if (objState.Board[i, j] != Board[i, j])
-                        return false;
-
-            return true;
+            return ((TicTacToeState)obj).Board.Board == Board.Board;
         }
 
         public override int GetHashCode()
         {
-            int hash = Board.Length;
-            for (int i = 0; i < 3; i++)
-                for (int j = 0; j < 3; j++)
-                    hash = unchecked(hash * 17 + Board[i, j].GetHashCode());
-            return hash;
+            return Board.Board;
         }
     }
 
@@ -79,42 +78,15 @@ namespace TicTacToeCore
     {
         public TicTacToeSummary(TicTacToeState state)
         {
-            for (int i = 0; i < 3; i++)
-            {
-                if (state.Board[i, 0] != default && state.Board[i, 0] == state.Board[i, 1] && state.Board[i, 0] == state.Board[i, 2])
-                {
-                    IsEnd = true;
-                    Winner = state.Board[i, 0];
-                    return;
-                }
-                if (state.Board[0, i] != default && state.Board[0, i] == state.Board[1, i] && state.Board[0, i] == state.Board[2, i])
-                {
-                    IsEnd = true;
-                    Winner = state.Board[0, i];
-                    return;
-                }
-            }
-            if (state.Board[0, 0] != default && state.Board[0, 0] == state.Board[1, 1] && state.Board[0, 0] == state.Board[2, 2])
+            TicTacToePlayerType? score = state.Board.GetScore();
+            if (score != null)
             {
                 IsEnd = true;
-                Winner = state.Board[0, 0];
-                return;
+                Winner = score.Value;
             }
-            if (state.Board[0, 2] != default && state.Board[0, 2] == state.Board[1, 1] && state.Board[0, 2] == state.Board[2, 0])
-            {
-                IsEnd = true;
-                Winner = state.Board[0, 2];
-                return;
-            }
-
-            for (byte x = 0; x < 3; x++)
-                for (byte y = 0; y < 3; y++)
-                    if (state.Board[x, y] == default)
-                        return;
-            IsEnd = true;
         }
 
         public bool IsEnd { get; set; }
-        public TicTacToePlayerType? Winner { get; set; }
+        public TicTacToePlayerType Winner { get; set; } = TicTacToePlayerType.No;
     }
 }

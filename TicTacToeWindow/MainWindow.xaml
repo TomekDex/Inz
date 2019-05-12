@@ -4,9 +4,24 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TicTacToeWindow"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        mc:Ignorable="d"        
+        Title="TicTacToe" Height="300" Width="300"
+        SizeToContent="Height"
+        >
     <Grid>
-        <Button Content="Start" HorizontalAlignment="Stretch" Margin="5,10,5,0" VerticalAlignment="Top" Click="Start_Click" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ComboBox x:Name="PlayerFirst" HorizontalAlignment="Stretch" Margin="10,10,10,10" VerticalAlignment="Top">
+            <ComboBoxItem IsSelected="True" >Player</ComboBoxItem>
+            <ComboBoxItem>AI</ComboBoxItem>
+        </ComboBox>
+        <ComboBox x:Name="PlayerSecond" HorizontalAlignment="Stretch" Margin="10,10,10,10" VerticalAlignment="Top" Grid.Column="1">
+            <ComboBoxItem IsSelected="True" >Player</ComboBoxItem>
+            <ComboBoxItem>AI</ComboBoxItem>
+        </ComboBox>
+        <CheckBox x:Name="RandomStart" Content="Random Start" VerticalAlignment="Top" Margin="10,37,10,0"/>
+        <Button Content="Start" HorizontalAlignment="Stretch" VerticalAlignment="Top" Grid.Column="1" Margin="10,37,10,10" Click="Start_Click" />
     </Grid>
 </Window>

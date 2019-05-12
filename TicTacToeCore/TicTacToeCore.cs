@@ -1,13 +1,13 @@
 ﻿using GamesCore;
-using System;
 using System.Collections.Generic;
 
 namespace TicTacToeCore
 {
     public enum TicTacToePlayerType
     {
-        X,
-        O
+        No = 0,
+        X = 2,
+        O = 3
     }
 
     public class TicTacToe : Game<TicTacToeState, TicTacToeMove, TicTacToePlayer, TicTacToeSummary, TicTacToeJudge, TicTacToeAction, TicTacToeSettings>

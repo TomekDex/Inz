@@ -5,8 +5,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="AITree.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GamesCore\GamesCore.csproj" />
     <ProjectReference Include="..\LearningAIPlayer\LearningAIPlayer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="AITree.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using TicTacToeCore;
 
 namespace TicTacToeWindow
@@ -17,7 +18,15 @@ namespace TicTacToeWindow
         {
             TicTacToe game = new TicTacToe();
             game.UserInterface = new TicTacToeUIWindow();
-            await game.Start(new TicTacToeSettings(), new TicTacToePlayer(), new TicTacToePlayerAI());
+            await game.Start(new TicTacToeSettings() { RandomStart = (RandomStart.IsChecked ?? false)}, GetPlayer(PlayerFirst.SelectedItem), GetPlayer(PlayerSecond.SelectedItem));
+        }
+
+        private TicTacToePlayer GetPlayer(object value)
+        {
+            if (((ComboBoxItem)value).Content.ToString() == "AI")
+                return new TicTacToePlayerAI();
+            else
+                return new TicTacToePlayer();
         }
     }
 }
