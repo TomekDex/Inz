@@ -14,21 +14,21 @@ namespace LearningAIPlayer
         Draw
     }
 
-    public abstract class AIPlayer<TState, TPlayer>
+    public abstract class AIPlayer<TState>
     {
         public const string PATH_AI_FILE = @"AITree.json";
-        public static Dictionary<TState, Node<TState, TPlayer>> Tree { get; set; } = GetAITree();
+        public static Dictionary<TState, Node<TState>> Tree { get; set; } = GetAITree();
         public static Task saveTask;
         public static object saveSemafore = new object();
         public static object addNodeSemafore = new object();
 
         public TState Root { get; set; }
 
-        private static Dictionary<TState, Node<TState, TPlayer>> GetAITree()
+        private static Dictionary<TState, Node<TState>> GetAITree()
         {
             if (File.Exists(PATH_AI_FILE))
-                return JsonConvert.DeserializeObject<KeyValuePair<TState, Node<TState, TPlayer>>[]>(File.ReadAllText(PATH_AI_FILE)).ToDictionary(a => a.Key, a => a.Value);
-            return new Dictionary<TState, Node<TState, TPlayer>>();
+                return JsonConvert.DeserializeObject<KeyValuePair<TState, Node<TState>>[]>(File.ReadAllText(PATH_AI_FILE)).ToDictionary(a => a.Key, a => a.Value);
+            return new Dictionary<TState, Node<TState>>();
         }
 
         private static void SaveTree()
@@ -98,14 +98,13 @@ namespace LearningAIPlayer
             Root = start;
         }
 
-        public abstract Node<TState, TPlayer> CreateNode(TState state);
+        public abstract Node<TState> CreateNode(TState state);
     }
 
-    public class Node<TState, TPlayer>
+    public class Node<TState>
     {
         public bool End { get; set; }
         public bool Winner { get; set; }
-        public TPlayer Player { get; set; }
 
         public Score Summary
         {
@@ -122,13 +121,13 @@ namespace LearningAIPlayer
                         return summary = Score.Draw;
                 }
 
-                if (Children.Any(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.Win))
+                if (Children.Any(a => AIPlayer<TState>.Tree[a].Summary == Score.Win))
                     return summary = Score.Defeat;
-                if (Children.Any(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.NotEnd))
+                if (Children.Any(a => AIPlayer<TState>.Tree[a].Summary == Score.NotEnd))
                     return Score.NotEnd;
-                if (Children.Any(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.Draw))
+                if (Children.Any(a => AIPlayer<TState>.Tree[a].Summary == Score.Draw))
                     return summary = Score.Draw;
-                if (Children.Any(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.Defeat))
+                if (Children.Any(a => AIPlayer<TState>.Tree[a].Summary == Score.Defeat))
                     return summary = Score.Win;
                 return Score.NotEnd;
             }
@@ -143,11 +142,11 @@ namespace LearningAIPlayer
 
         public TState GetNext()
         {
-            TState next = Children.FirstOrDefault(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.Win);
+            TState next = Children.FirstOrDefault(a => AIPlayer<TState>.Tree[a].Summary == Score.Win);
             if (next == null)
-                next = Children.FirstOrDefault(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.NotEnd);
+                next = Children.FirstOrDefault(a => AIPlayer<TState>.Tree[a].Summary == Score.NotEnd);
             if (next == null)
-                next = Children.FirstOrDefault(a => AIPlayer<TState, TPlayer>.Tree[a].Summary == Score.Draw);
+                next = Children.FirstOrDefault(a => AIPlayer<TState>.Tree[a].Summary == Score.Draw);
             if (next == null)
                 next = Children.First();
             return next;

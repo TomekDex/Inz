@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <Content Include="AITree.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

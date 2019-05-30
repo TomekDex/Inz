@@ -56,32 +56,15 @@ namespace TicTacToeCore
         }
     }
 
-    public class TicTacToeLearningAIPlayer : AIPlayer<TicTacToeState, TicTacToePlayer>
+    public class TicTacToeLearningAIPlayer : AIPlayer<TicTacToeState>
     {
-        public override Node<TicTacToeState, TicTacToePlayer> CreateNode(TicTacToeState state)
+        public override Node<TicTacToeState> CreateNode(TicTacToeState state)
         {
-            return new Node<TicTacToeState, TicTacToePlayer>
+            return new Node<TicTacToeState>
             {
                 End = state.Summary.IsEnd,
-                Winner = state.Summary.Winner != TicTacToePlayerType.No,
-                Player = GetPlayer(state)
+                Winner = state.Summary.Winner != TicTacToePlayerType.No
             };
-        }
-
-        private TicTacToePlayer GetPlayer(TicTacToeState state)
-        {
-            Dictionary<TicTacToePlayerType, byte> counts = new Dictionary<TicTacToePlayerType, byte> { { TicTacToePlayerType.X, 0 }, { TicTacToePlayerType.O, 0 } };
-            for (int i = 0; i < 3; i++)
-                for (int j = 0; j < 3; j++)
-                {
-                    TicTacToePlayerType type = state.Board[i, j];
-                    if (type != TicTacToePlayerType.No)
-                        counts[type]++;
-                }
-            if (counts[TicTacToePlayerType.O] == counts[TicTacToePlayerType.X])
-                return state.Players.Single(a => a.PlayerType == TicTacToePlayerType.X);
-            else
-                return state.Players.Single(a => a.PlayerType == TicTacToePlayerType.O);
         }
     }
 }
