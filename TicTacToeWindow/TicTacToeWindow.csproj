@@ -16,9 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="TicTacToeUIWindow.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Update="TicTacToeUIWindow.xaml.cs" />
   </ItemGroup>
 
 </Project>
