@@ -17,7 +17,9 @@ namespace LearningAIPlayer
     public abstract class AIPlayer<TState>
     {
         public const string PATH_AI_FILE = @"AITree.json";
+
         public static Dictionary<TState, Node<TState>> Tree { get; set; } = GetAITree();
+
         public static Task saveTask;
         public static object saveSemafore = new object();
         public static object addNodeSemafore = new object();
@@ -35,8 +37,10 @@ namespace LearningAIPlayer
         {
             Task newSaveTask = new Task(async () =>
                 {
+                    string tree;
                     lock (addNodeSemafore)
-                        File.WriteAllText(PATH_AI_FILE, JsonConvert.SerializeObject(Tree.ToArray()));
+                        tree = JsonConvert.SerializeObject(Tree.ToArray());
+                    File.WriteAllText(PATH_AI_FILE, tree);
                     await Task.Delay(10000);
                     if (saveTask != null)
                     {
