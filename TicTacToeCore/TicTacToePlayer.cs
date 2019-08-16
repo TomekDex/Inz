@@ -13,7 +13,7 @@ namespace TicTacToeCore
         [JsonIgnore]
         public IUserInterface<TicTacToeState, TicTacToeMove, TicTacToePlayer, TicTacToeSummary, TicTacToeAction> UserInterface { get; set; }
 
-        public virtual void AnalyzeRsult(TicTacToeState state)
+        public virtual void AnalyzeResult(TicTacToeState state)
         {
         }
 
@@ -49,7 +49,7 @@ namespace TicTacToeCore
             return allowedMoves.First(a => a.StateEnd == move);
         }
 
-        public override void AnalyzeRsult(TicTacToeState state)
+        public override void AnalyzeResult(TicTacToeState state)
         {
             if (!TicTacToeLearningAIPlayer.Tree.ContainsKey(state) && !aIPlayer.Root.Equals(state))
                 aIPlayer.AddNode(aIPlayer.Root, state);

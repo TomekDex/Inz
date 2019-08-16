@@ -13,7 +13,7 @@ namespace DraughtsCore
         public IUserInterface<DraughtsState, DraughtsMove, DraughtsPlayer, DraughtsSummary, DraughtsAction> UserInterface { get; set; }
         public bool NoMove { get; internal set; }
 
-        public virtual void AnalyzeRsult(DraughtsState state)
+        public virtual void AnalyzeResult(DraughtsState state)
         {
         }
 

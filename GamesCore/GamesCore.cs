@@ -37,7 +37,7 @@ namespace GamesCore
             }
 
             foreach (TPlayer player in players)
-                player.AnalyzeRsult(state);
+                player.AnalyzeResult(state);
 
             await UserInterface?.ShowEndState(state);
         }
@@ -108,7 +108,7 @@ namespace GamesCore
     {
         IUserInterface<TState, TMove, TPlayer, TSummary, TAction> UserInterface { get; set; }
 
-        void AnalyzeRsult(TState state);
+        void AnalyzeResult(TState state);
         Task<TMove> NextMove(TState state, List<TMove> allowedMoves);
     }
 }
