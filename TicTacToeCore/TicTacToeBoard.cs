@@ -7,6 +7,9 @@ namespace TicTacToeCore
         private static readonly int[] endMasksX = GetWinMaskFor(TicTacToePlayerType.X);
         private static readonly int[] endMasksO = GetWinMaskFor(TicTacToePlayerType.O);
         private static readonly int fullMask = GetFullMask();
+        private const int PLACE_SIZE = 2;
+        private const int ROW_NUMBER = 3;
+        private const int PLACE_MASK = 3;
 
         private static int GetFullMask()
         {
@@ -60,12 +63,12 @@ namespace TicTacToeCore
         {
             get
             {
-                return (TicTacToePlayerType)((Board >> ((y * 3 + x) * 2)) & 3);
+                return (TicTacToePlayerType)((Board >> ((y * ROW_NUMBER + x) * PLACE_SIZE)) & PLACE_MASK);
             }
 
             set
             {
-                Board |= (int)value << ((y * 3 + x) * 2);
+                Board |= (int)value << ((y * ROW_NUMBER + x) * PLACE_SIZE);
             }
         }
 
