@@ -24,7 +24,7 @@ namespace LearningAIPlayer
         public static object saveSemafore = new object();
         public static object addNodeSemafore = new object();
 
-        public TState Root { get; set; }
+        public TState CurrentNode { get; set; }
 
         private static Dictionary<TState, Node<TState>> GetAITree()
         {
@@ -82,24 +82,24 @@ namespace LearningAIPlayer
 
         public TState GetNextMove(TState start, TState[] stateMoves)
         {
-            SetRoot(start, stateMoves);
-            Root = Tree[Root].GetNext();
-            return stateMoves.Single(a => a.Equals(Root));
+            SetNode(start, stateMoves);
+            CurrentNode = Tree[CurrentNode].GetNext();
+            return stateMoves.Single(a => a.Equals(CurrentNode));
         }
 
-        private void SetRoot(TState start, TState[] stateMoves)
+        private void SetNode(TState start, TState[] stateMoves)
         {
             if (!Tree.ContainsKey(start))
             {
                 lock (addNodeSemafore)
                     Tree.Add(start, CreateNode(start));
-                if (Root != null)
+                if (CurrentNode != null)
                     lock (addNodeSemafore)
-                        Tree[Root].Children.Add(start);
+                        Tree[CurrentNode].Children.Add(start);
             }
 
             AddNode(start, stateMoves);
-            Root = start;
+            CurrentNode = start;
         }
 
         public abstract Node<TState> CreateNode(TState state);

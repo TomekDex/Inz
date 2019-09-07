@@ -51,8 +51,8 @@ namespace TicTacToeCore
 
         public override void AnalyzeResult(TicTacToeState state)
         {
-            if (!TicTacToeLearningAIPlayer.Tree.ContainsKey(state) && !aIPlayer.Root.Equals(state))
-                aIPlayer.AddNode(aIPlayer.Root, state);
+            if (!TicTacToeLearningAIPlayer.Tree.ContainsKey(state) && !aIPlayer.CurrentNode.Equals(state))
+                aIPlayer.AddNode(aIPlayer.CurrentNode, state);
         }
     }
 
