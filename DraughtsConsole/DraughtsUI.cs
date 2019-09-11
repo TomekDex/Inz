@@ -9,17 +9,18 @@ namespace DraughtsConsole
 {
     class DraughtsUI : IUserInterface<DraughtsState, DraughtsMove, DraughtsPlayer, DraughtsSummary, DraughtsAction>
     {
+        const int USER_CONTROL_ROW = 7;
         public async Task ShowEndState(DraughtsState state)
         {
             ShowState(state);
-            Console.SetCursorPosition(0, 7);
+            Console.SetCursorPosition(0, USER_CONTROL_ROW);
             Console.WriteLine("Winner: " + ChoosePlayerCharacter(state.Summary.Winner));
             Console.ReadKey();
         }
 
         public async Task<DraughtsMove> ShowSelectionMove(DraughtsState state, DraughtsPlayer player, List<DraughtsMove> allowedMoves)
         {
-            Console.SetCursorPosition(0, 7);
+            Console.SetCursorPosition(0, USER_CONTROL_ROW);
             Console.WriteLine("Choose move plater: " + ChoosePlayerCharacter(player.PlayerType));
             for (int i = 0; i < allowedMoves.Count; i++)
             {

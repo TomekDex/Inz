@@ -9,10 +9,11 @@ namespace TicTacToeConsole
 {
     internal class TicTacToeConsoleUserInterface : IUserInterface<TicTacToeState, TicTacToeMove, TicTacToePlayer, TicTacToeSummary, TicTacToeAction>
     {
+        const int USER_CONTROL_ROW = 7;
         public async Task ShowEndState(TicTacToeState state)
         {
             ShowState(state);
-            Console.SetCursorPosition(0, 7);
+            Console.SetCursorPosition(0, USER_CONTROL_ROW);
             TicTacToePlayerType winner = state.Summary.Winner;
             if (winner == TicTacToePlayerType.No)
                 Console.WriteLine("Draw!!!!!");
@@ -22,7 +23,7 @@ namespace TicTacToeConsole
 
         public async Task<TicTacToeMove> ShowSelectionMove(TicTacToeState state, TicTacToePlayer player, List<TicTacToeMove> allowedMoves)
         {
-            Console.SetCursorPosition(0, 7);
+            Console.SetCursorPosition(0, USER_CONTROL_ROW);
             Console.WriteLine($"Your turn {player.PlayerType}");
             do
             {
