@@ -7,7 +7,8 @@ namespace DraughtsCore
 {
     public class DraughtsBoard : ICloneable
     {
-        private readonly DraughtsPlayerType?[,] border = new DraughtsPlayerType?[5, 5];
+        public const int BOARD_SIZE = 5;
+        private readonly DraughtsPlayerType?[,] border = new DraughtsPlayerType?[BOARD_SIZE, BOARD_SIZE];
 
         public Dictionary<Point, Vector[]> PlacesAndNeighbors { get; }
 
@@ -27,7 +28,7 @@ namespace DraughtsCore
                 {
                     short newX = (short)(point.X + i);
                     short newY = (short)(point.Y + j);
-                    if (newX < 0 || newX >= 5 || newY < 0 || newY >= 5)
+                    if (newX < 0 || newX >= BOARD_SIZE || newY < 0 || newY >= BOARD_SIZE)
                         continue;
                     if ((newX + newY) % 2 != 0)
                         continue;
@@ -38,8 +39,8 @@ namespace DraughtsCore
 
         private IEnumerable<Point> GetPlaces()
         {
-            for (byte x = 0; x < 5; x++)
-                for (byte y = 0; y < 5; y++)
+            for (byte x = 0; x < BOARD_SIZE; x++)
+                for (byte y = 0; y < BOARD_SIZE; y++)
                     if ((x + y) % 2 == 0)
                         yield return new Point(x, y);
         }
