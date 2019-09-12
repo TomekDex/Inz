@@ -21,6 +21,7 @@ namespace TicTacToeWindow
                 for (int j = 0; j < 3; j++)
                 {
                     board[i, j] = new ButtonAwait();
+                    board[i, j].FontSize = 60;
                     Grid.SetColumn(board[i, j], i);
                     Grid.SetRow(board[i, j], j);
                     MainGrid.Children.Add(board[i, j]);
