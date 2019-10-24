@@ -1,4 +1,5 @@
 ﻿using DraughtsCore;
+using System;
 
 namespace DraughtsConsole
 {
@@ -8,6 +9,7 @@ namespace DraughtsConsole
         {
             Draughts game = new Draughts { UserInterface = new DraughtsUI() };
             game.Start(new DraughtsSettings(), new DraughtsPlayerAI(), new DraughtsPlayer());
+            Console.ReadKey();
         }
     }
 }

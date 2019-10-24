@@ -13,6 +13,7 @@ namespace TicTacToeConsole
             TicTacToe game = new TicTacToe();
             game.UserInterface = new TicTacToeConsoleUserInterface();
             game.Start(new TicTacToeSettings { RandomStart = random }, playerFirst, playerSecond);
+            Console.ReadKey();
         }
 
         private static TicTacToePlayer SetPlayer(string vlaue)
